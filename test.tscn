@@ -1,22 +1,26 @@
-[gd_scene load_steps=18 format=3 uid="uid://8brl0ni4uuxp"]
+[gd_scene load_steps=19 format=3 uid="uid://8brl0ni4uuxp"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_las86"]
 [ext_resource type="Script" path="res://CharacterBody3D.gd" id="1_pwu08"]
 [ext_resource type="PackedScene" uid="uid://wp6rl1xq68el" path="res://pause.tscn" id="3_6ia6d"]
+[ext_resource type="Script" path="res://flashlight.gd" id="3_67jv0"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_hbim3"]
-sky_top_color = Color(0.0612954, 0.0824659, 0.111906, 1)
-sky_horizon_color = Color(0, 0, 0, 1)
+sky_top_color = Color(0.705211, 0.820075, 0.868178, 1)
+sky_horizon_color = Color(0.644522, 0.640244, 0.64661, 1)
 sky_curve = 1.15912
 sky_cover_modulate = Color(0.0915856, 0.0267795, 0.0222366, 1)
 ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+sun_angle_max = 70.64
+sun_curve = 0.115853
 
 [sub_resource type="Sky" id="Sky_s7vpg"]
 sky_material = SubResource("ProceduralSkyMaterial_hbim3")
 
 [sub_resource type="Environment" id="Environment_2y35g"]
 background_mode = 2
-background_energy_multiplier = 0.0
+background_energy_multiplier = 0.9
+background_canvas_max_layer = 23
 sky = SubResource("Sky_s7vpg")
 tonemap_mode = 2
 glow_enabled = true
@@ -46,7 +50,6 @@ noise = SubResource("FastNoiseLite_107h0")
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2f2l1"]
 shading_mode = 2
 diffuse_mode = 1
-albedo_color = Color(0.2761, 0.202065, 0.101607, 1)
 albedo_texture = SubResource("NoiseTexture2D_jv758")
 metallic_specular = 0.0
 roughness_texture = SubResource("NoiseTexture2D_jv758")
@@ -73,8 +76,10 @@ noise = SubResource("FastNoiseLite_vyruo")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ris0a"]
 albedo_color = Color(0, 0, 0, 1)
-metallic_specular = 0.25
+metallic_specular = 0.13
 roughness_texture = SubResource("NoiseTexture2D_x32jc")
+normal_enabled = true
+normal_texture = SubResource("NoiseTexture2D_x32jc")
 
 [node name="World" type="Node3D"]
 script = ExtResource("1_las86")
@@ -113,21 +118,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00782108, 0.0354416, -0.02
 
 [node name="Hand" type="Node3D" parent="Player"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+script = ExtResource("3_67jv0")
 
 [node name="flashlight" type="SpotLight3D" parent="Player/Hand"]
-light_energy = 2.946
+visible = false
+light_energy = 6.405
 light_volumetric_fog_energy = 16.0
 light_size = 0.162
-spot_range = 7.987
-spot_attenuation = 1.36604
-spot_angle = 32.84
-spot_angle_attenuation = 2.46228
-
-[node name="CSGBox3D2" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 4.59986, 0, 0, 0, 14.2881, 26.157, 0.884877, 0.014267)
-use_collision = true
-size = Vector3(13.0848, 0.621216, 1)
-material = SubResource("StandardMaterial3D_ris0a")
+spot_range = 53.982
+spot_angle = 27.98
 
 [node name="CSGBox3D8" type="CSGBox3D" parent="."]
 transform = Transform3D(0.406749, 0, 0, 0, 1.87099, 0, 0, 0, 5.81169, 10.6723, 1.75038, 1.72821)
@@ -181,34 +180,6 @@ material = SubResource("StandardMaterial3D_ris0a")
 transform = Transform3D(0.273632, 0, -4.30001, 0, 1.87099, 0, 0.30095, 0, 3.90969, 10.7148, 4.3999, -6.16417)
 use_collision = true
 size = Vector3(9.88708, 0.547241, 0.209961)
-material = SubResource("StandardMaterial3D_ris0a")
-
-[node name="CSGBox3D6" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 6.70523, 0, 0, 0, 14.2881, 26.1689, -0.0737391, -19.0906)
-use_collision = true
-size = Vector3(13.0848, 0.15625, 1)
-material = SubResource("StandardMaterial3D_ris0a")
-
-[node name="CSGBox3D3" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 58.5657, 0, 0, 0, 142.518, -71.0182, 27.6779, 0.014267)
-use_collision = true
-material = SubResource("StandardMaterial3D_ris0a")
-
-[node name="CSGBox3D7" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 58.5657, 0, 0, 0, 142.518, 70.4661, 27.6779, 0.014267)
-use_collision = true
-material = SubResource("StandardMaterial3D_ris0a")
-
-[node name="CSGBox3D4" type="CSGBox3D" parent="."]
-transform = Transform3D(-4.37114e-08, 0, 142.518, 0, 58.5657, 0, -1, 0, -6.22965e-06, -1.56958, 27.6779, 62.0537)
-use_collision = true
-size = Vector3(1, 1, 1.07959)
-material = SubResource("StandardMaterial3D_ris0a")
-
-[node name="CSGBox3D5" type="CSGBox3D" parent="."]
-transform = Transform3D(-4.37114e-08, 0, 142.518, 0, 58.5657, 0, -1, 0, -6.22965e-06, -1.56958, 27.6779, -69.9861)
-use_collision = true
-size = Vector3(1, 1, 1.07959)
 material = SubResource("StandardMaterial3D_ris0a")
 
 [node name="Pause" parent="." instance=ExtResource("3_6ia6d")]

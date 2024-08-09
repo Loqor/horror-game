@@ -49,19 +49,22 @@ func _physics_process(delta):
 	if Input.is_action_just_pressed("jump") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
 		
+
+	$CollisionShape3D.scale.y = 1.0
+	$CollisionShape3D.position.y = 0.0
+	head.position.y = 0.617
+	speed = WALK_SPEED
+		
 	if Input.is_action_pressed("sprint"):
 		speed = SPRINT_SPEED
-	else:
-		if Input.is_action_pressed("crouch"):
-			$CollisionShape3D.scale.y = 0.5
-			$CollisionShape3D.position.y = -0.5
-			head.position.y = 0.617 / 2.0
-			speed = CROUCH_SPEED
-		else:
-			$CollisionShape3D.scale.y = 1.0
-			$CollisionShape3D.position.y = 0.0
-			head.position.y = 0.617
-			speed = WALK_SPEED
+		
+	if Input.is_action_pressed("crouch"):
+		$CollisionShape3D.scale.y = 0.5
+		$CollisionShape3D.position.y = -0.5
+		head.position.y = head.position.y / 2.0
+		speed = CROUCH_SPEED
+
+		
 
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.

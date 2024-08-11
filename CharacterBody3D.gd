@@ -7,6 +7,14 @@ const SPRINT_SPEED = 7.0
 const JUMP_VELOCITY = 4.5
 const SENSITIVITY = 0.003
 
+const TARGET_HEIGHT = 0.617;
+
+# crouch lerping TODO - rn this is tied to FPS, bad :(
+var crouch_target_height;
+var crouch_old_height;
+var crouch_timer = 0.0;
+const MAX_CROUCH_TIME = 10.0;
+
 #bob variables
 const BOB_FREQ = 2.0
 const BOB_AMP = 0.08
@@ -52,20 +60,15 @@ func _physics_process(delta):
 
 	$CollisionShape3D.scale.y = 1.0
 	$CollisionShape3D.position.y = 0.0
-	head.position.y = 0.617
+	if (!is_crouch_running()):
+		head.position.y = TARGET_HEIGHT;
 	speed = WALK_SPEED
 		
 	if Input.is_action_pressed("sprint"):
 		speed = SPRINT_SPEED
 		
-	if Input.is_action_pressed("crouch"):
-		$CollisionShape3D.scale.y = 0.5
-		$CollisionShape3D.position.y = -0.5
-		head.position.y = head.position.y / 2.0
-		speed = CROUCH_SPEED
-
+	update_crouch(Input.is_action_pressed("crouch"));
 		
-
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
 	var input_dir = Input.get_vector("left", "right", "up", "down")
@@ -97,3 +100,44 @@ func _headbob(time) -> Vector3:
 	pos.y = sin(time * BOB_FREQ) * BOB_AMP
 	pos.x = cos(time * BOB_FREQ / 2) * BOB_AMP
 	return pos
+
+func is_crouch_running() -> bool:
+	return crouch_timer > 0;
+	
+func update_crouch(is_pressed: bool):
+	if is_pressed:		
+		$CollisionShape3D.scale.y = 0.5
+		$CollisionShape3D.position.y = -0.5
+		
+		if (crouch_target_height == null):
+			crouch_old_height = head.position.y;
+			crouch_target_height = crouch_old_height / 2.0;
+	
+		update_crouch_head(crouch_target_height, false);
+		
+		speed = CROUCH_SPEED
+		
+		if (crouch_timer < MAX_CROUCH_TIME):
+			crouch_timer += 1;	
+		return;
+		
+	if (crouch_timer > 0):
+		crouch_timer -= 1;	
+		
+		if (crouch_old_height != crouch_target_height):
+			crouch_old_height = crouch_target_height;
+		
+		update_crouch_head(TARGET_HEIGHT, true);
+		
+		if (crouch_timer == 0):
+			crouch_old_height = null;
+			crouch_target_height = null;
+			
+		return;
+		
+func update_crouch_head(target: float, invert: bool):
+	var time = crouch_timer / MAX_CROUCH_TIME;
+	if (invert):
+		time = 1 - time;
+	
+	head.position.y = lerp(crouch_old_height, target, time);
